@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 function Square(props) {
     return (
-        <button className="square" onClick={()=>props.onClick()}>
+        <button className={props.winner ? 'square winner' : 'square'} onClick={()=>props.onClick()}>
             {props.value}
         </button>
     );
@@ -12,7 +12,8 @@ function Square(props) {
 class Board extends React.Component {
 
     renderSquare(i) {
-        return <Square value={this.props.squares[i]} onClick={()=>this.props.onClick(i)} />;
+        let winner = this.props.winners.find(item => item === i) !== undefined;
+        return <Square value={this.props.squares[i]} onClick={()=>this.props.onClick(i)} winner={winner} />;
     }
 
     render() {
@@ -47,7 +48,7 @@ class Game extends React.Component {
                 {squares: new Array(9).fill(null)}
             ],
             xIsNext: true,
-            stepNumber: 0
+            stepNumber: 0,
         };
     }
 
@@ -73,7 +74,7 @@ class Game extends React.Component {
     render() {
         const history = this.state.history.slice();
         const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
+        const winners = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
             const desc = move ?
@@ -88,8 +89,8 @@ class Game extends React.Component {
 
         let status;
 
-        if (winner){
-            status = 'Winner: ' + winner;
+        if (winners){
+            status = 'Winner: ' + this.currentPlayer();
         }
         else if (current.squares.find(x => x === null) === undefined) {
             status = 'No more moves left';
@@ -101,7 +102,7 @@ class Game extends React.Component {
         return (
             <div className="game">
                 <div className="game-board">
-                    <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+                    <Board squares={current.squares} onClick={i => this.handleClick(i)} winners={winners ? winners : [null, null, null]}/>
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
@@ -109,6 +110,10 @@ class Game extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    currentPlayer() {
+        return this.state.xIsNext ? 'O' : 'X';
     }
 
     jumpTo(step) {
@@ -140,7 +145,7 @@ function calculateWinner(squares) {
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            return [a, b, c];
         }
     }
     return null;
