@@ -2,6 +2,8 @@ import lodash from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import './style.css';
+
 function Square(props) {
     return (
         <button className={props.winner ? 'square winner' : 'square'} onClick={()=>props.onClick()}>
