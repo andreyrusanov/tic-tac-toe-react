@@ -58,7 +58,7 @@ class Game extends React.Component {
     }
 
     handleClick(i) {
-        const history = this.state.history;
+        let history = this.state.history;
         const current = history[this.state.stepNumber];
         const squares = current.squares.slice();
 
@@ -66,7 +66,12 @@ class Game extends React.Component {
             return;
         }
 
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        // click during travelling through history happened - remove rest of the history
+        if (this.state.stepNumber !== history.length - 1) {
+            history = history.slice(0, this.state.stepNumber+1);
+        }
+
+        squares[i] = this.nextPlayer();
         this.setState({
             history: history.concat([{
                 squares: squares
@@ -133,6 +138,10 @@ class Game extends React.Component {
 
     currentPlayer() {
         return this.state.xIsNext ? 'O' : 'X';
+    }
+
+    nextPlayer() {
+        return this.state.xIsNext ? 'X' : 'O';
     }
 
     jumpTo(step) {

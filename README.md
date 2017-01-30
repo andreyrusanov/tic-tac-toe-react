@@ -4,4 +4,4 @@
 4. Add a toggle button that lets you sort the moves in either ascending or descending order.
 5. ~~When someone wins, highlight the three squares that caused the win.~~
 6. ~~"Clean and restart" button~~
-7. Override "next" steps
+7. ~~Override "next" steps~~
