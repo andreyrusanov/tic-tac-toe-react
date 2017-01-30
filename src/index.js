@@ -41,15 +41,20 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+
     constructor() {
         super();
-        this.state = {
+        this.state = this.getInitState();
+    }
+
+    getInitState() {
+        return {
             history: [
                 {squares: new Array(9).fill(null)}
             ],
             xIsNext: true,
             stepNumber: 0,
-        };
+        }
     }
 
     handleClick(i) {
@@ -71,6 +76,10 @@ class Game extends React.Component {
         });
     }
 
+    replay() {
+        this.setState(this.getInitState());
+    }
+
     render() {
         const history = this.state.history.slice();
         const current = history[this.state.stepNumber];
@@ -87,29 +96,39 @@ class Game extends React.Component {
             );
         });
 
-        let status;
+        let status = this.getStatus(winners, current.squares);
 
-        if (winners){
-            status = 'Winner: ' + this.currentPlayer();
-        }
-        else if (current.squares.find(x => x === null) === undefined) {
-            status = 'No more moves left';
-        }
-        else {
-            status = 'Next player: X';
+        function _get_winners(w) {
+            return w ? w : [null, null, null];
         }
 
         return (
             <div className="game">
                 <div className="game-board">
-                    <Board squares={current.squares} onClick={i => this.handleClick(i)} winners={winners ? winners : [null, null, null]}/>
+                    <Board squares={current.squares} onClick={i => this.handleClick(i)} winners={_get_winners(winners)}/>
                 </div>
                 <div className="game-info">
+                    <div><a href="#" onClick={() => this.replay()}>Replay</a></div>
                     <div>{status}</div>
                     <ol>{moves}</ol>
                 </div>
             </div>
         );
+    }
+
+    getStatus(winners, squares) {
+        let status;
+
+        if (winners){
+            status = 'Winner: ' + this.currentPlayer();
+        }
+        else if (squares.find(x => x === null) === undefined) {
+            status = 'No more moves left';
+        }
+        else {
+            status = 'Next player: X';
+        }
+        return status;
     }
 
     currentPlayer() {
